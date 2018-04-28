@@ -19,7 +19,15 @@ For example, if you use CentOS 7, the document root directory is located in "/us
 
 ### Usage
 
+The PHP script accepts two parameters:
+* "hostgroup": Required. Defines which hostgroup in your Zabbix environment will be queried.
+* "triggernames": Optional. If the value is "1" the names of the triggers will be displayed in the topology.
+
+With the PHP script copied to the document root of your Zabbix Frontend, access it through the URL of your Zabbix:
+* "https://localhost/topobbix.php?Hostgroup = Region1"
 ![alt text](READMEImages/topobbix1.png)
+
+
 
 ## Built With
 
