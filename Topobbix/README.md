@@ -24,10 +24,15 @@ The PHP script accepts two parameters:
 * "triggernames": Optional. If the value is "1" the names of the triggers will be displayed in the topology.
 
 With the PHP script copied to the document root of your Zabbix Frontend, access it through the URL of your Zabbix:
-* "https://localhost/topobbix.php?Hostgroup = Region1"
-![alt text](READMEImages/topobbix1.png)
+* "https://localhost/topobbix.php?Hostgroup=Region1"
+The topology will appear in the browser:
 
+![example1](READMEImages/topobbix1.png)
 
+If you add the triggernames parameter the topology will display the triggers name:
+* "https://localhost/topobbix.php?Hostgroup=Region1&triggernames=1"
+
+![example2](READMEImages/topobbix2.png)
 
 ## Built With
 
