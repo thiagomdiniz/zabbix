@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<webServiceDataAdapter class="com.jaspersoft.webservice.data.WebServiceDataAdapterImpl"><name>ZabbixAPI</name><wsUri>http://192.168.100.1/</wsUri><authType>none</authType><verb>post</verb><language xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:java="http://java.sun.com" xsi:type="java:java.lang.String">json</language></webServiceDataAdapter>
