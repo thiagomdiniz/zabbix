@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.4.3.final using JasperReports Library version 6.4.3  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="main" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="fba2e90e-5ca4-4776-b0e6-dd8254986de0">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="ZabbixAPI"/>
+	<property name="ireport.jasperserver.url" value="http://192.168.100.215:8080/jasperserver/"/>
+	<property name="ireport.jasperserver.user" value="jasperadmin"/>
+	<property name="ireport.jasperserver.reportUnit" value="/Zabbix/Teste3"/>
+	<property name="ireport.jasperserver.report.resource" value="/Zabbix/Teste3_files/main_jrxml"/>
+	<scriptlet name="ZabbixAuth" class="com.zabbix.jasper.ZabbixUserLogin">
+		<scriptletDescription><![CDATA[]]></scriptletDescription>
+	</scriptlet>
+	<parameter name="auth" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[$P{ZabbixAuth_SCRIPTLET}.getAuthToken("http://192.168.100.1/api_jsonrpc.php","Admin","zabbix")]]></defaultValueExpression>
+	</parameter>
+	<queryString language="WebServiceQuery">
+		<![CDATA[{
+  "getparameters" : { },
+  "fields" : [ {
+    "name" : "hostid",
+    "expression" : "hostid"
+  }, {
+    "name" : "host",
+    "expression" : "host"
+  }, {
+    "name" : "ip",
+    "expression" : "interfaces.ip"
+  } ],
+  "options" : {
+    "contentType" : "application/json",
+    "rootPath" : "result",
+    "baseUrl" : "api_jsonrpc.php"
+  },
+  "headersMap" : { },
+  "queryData" : "{\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"host.get\",\n    \"params\": {\n        \"output\": [\n            \"hostid\",\n            \"host\"\n        ],\n        \"selectInterfaces\": [\n            \"interfaceid\",\n            \"ip\"\n        ]\n    },\n    \"id\": 2,\n    \"auth\": \"$P{auth}\"\n}",
+  "GETParameters" : { }
+}]]>
+	</queryString>
+	<field name="hostid" class="java.lang.String"/>
+	<field name="host" class="java.lang.String"/>
+	<field name="ip" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="32" splitType="Stretch">
+			<staticText>
+				<reportElement x="10" y="0" width="535" height="30" uuid="565710e8-94c7-47b3-bdf4-5caee1203aa0"/>
+				<textElement textAlignment="Center">
+					<font size="24"/>
+				</textElement>
+				<text><![CDATA[Zabbix API]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="23" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="100" height="20" uuid="37d0a719-e150-4e88-8547-287c63c14787">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="c0a5dace-d4ec-462e-9d50-51762352b7e9"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[host]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="170" y="0" width="100" height="20" uuid="f81aebbd-b19b-4d8b-8ffd-7ad8d1d298f4">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="473b0b04-f9bb-45ca-a262-557ca8359400"/>
+				</reportElement>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[ip]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="267" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="160" height="20" uuid="3aca370f-dd9e-43e6-aa1e-c260ea34d28c">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="c0a5dace-d4ec-462e-9d50-51762352b7e9"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{host}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="170" y="0" width="100" height="20" uuid="33b4d59d-29ea-4d2d-b01c-dcea0ac543cd">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="473b0b04-f9bb-45ca-a262-557ca8359400"/>
+				</reportElement>
+				<textFieldExpression><![CDATA[$F{ip}]]></textFieldExpression>
+			</textField>
+			<subreport>
+				<reportElement x="10" y="30" width="534" height="150" uuid="5a12387b-2ece-4cc2-8d97-57682d8db3a4"/>
+				<subreportParameter name="hostid">
+					<subreportParameterExpression><![CDATA[$F{hostid}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="auth">
+					<subreportParameterExpression><![CDATA[$P{auth}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["sub.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="36" splitType="Stretch">
+			<textField>
+				<reportElement x="10" y="0" width="534" height="30" uuid="a171f426-5741-4522-bb04-821891ee2494"/>
+				<textFieldExpression><![CDATA[$P{ZabbixAuth_SCRIPTLET}.tokenLogout("http://192.168.100.1/api_jsonrpc.php",$P{auth})]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>
