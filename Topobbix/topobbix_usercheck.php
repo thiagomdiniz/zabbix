@@ -47,7 +47,7 @@ function htmlBegin(){
     echo "<html>\n" .
          "  <head>\n" .
          "    <title>Topobbix</title>\n" .
-         "    <script src='https://cdnjs.cloudflare.com/ajax/libs/mermaid/7.1.2/mermaid.min.js'></script>\n" .
+         "    <script src='https://unpkg.com/mermaid@7.1.2/dist/mermaid.min.js'></script>\n" .
          "    <script>mermaid.initialize({startOnLoad:true});</script>\n" .
          "  </head>\n" .
          "  <body>\n" .
