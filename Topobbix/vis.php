@@ -88,7 +88,7 @@ function htmlEnd(){
        "    edgeMinimization: true,\n" .
        "   parentCentralization: true,\n" .
        "    direction: 'DU',        // UD, DU, LR, RL\n" .
-       "    sortMethod: 'directed   // hubsize, directed\n" .
+       "    sortMethod: 'directed'   // hubsize, directed\n" .
        "  }\n" .
        "}\n" .
        "}\n" .
