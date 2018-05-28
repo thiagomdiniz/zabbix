@@ -14,7 +14,7 @@ if (!CWebUser::$data['alias'] || CWebUser::$data['alias'] == ZBX_GUEST_USER) {
     if (isset($_GET['hostgroup'])) {
 
         $hostgroup = $_GET['hostgroup'];
-        $triggernames = $_GET['triggernames'];
+        //$triggernames = $_GET['triggernames'];
 
         // Check user permissions for the HostGroup
         $grupo = API::HostGroup()->get([
@@ -39,7 +39,7 @@ if (!CWebUser::$data['alias'] || CWebUser::$data['alias'] == ZBX_GUEST_USER) {
 
 }
 
-// Function to print initial HTML code
+// Function to print initial HTML and vis.js code
 function htmlBegin(){
 
     global $hostgroup;
@@ -62,7 +62,7 @@ function htmlBegin(){
 
 }
 
-// Function to print the end of HTML code
+// Function to print the end of HTML and vis.js code
 function htmlEnd(){
 
   echo "// create a network\n" .
@@ -74,7 +74,10 @@ function htmlEnd(){
 //       "var options = {};\n" .
        "var options = {\n" .
        "nodes: {\n" .
-       "  shadow:true\n" .
+       "  shadow: true,\n" .
+       "  margin: 10,\n" .
+       "  shape: 'box',\n" .
+       "  font: { size: 20 }\n" .
        "},\n" .
        "layout: {\n" .
        "  randomSeed: undefined,\n" .
@@ -86,7 +89,7 @@ function htmlEnd(){
        "    treeSpacing: 200,\n" .
        "    blockShifting: true,\n" .
        "    edgeMinimization: true,\n" .
-       "   parentCentralization: true,\n" .
+       "    parentCentralization: true,\n" .
        "    direction: 'DU',        // UD, DU, LR, RL\n" .
        "    sortMethod: 'directed'   // hubsize, directed\n" .
        "  }\n" .
@@ -294,10 +297,8 @@ while ($depend = DBfetch($result, $convertNulls = false)) {
 $size = count($depends);
 if($size == 0){
 
-    htmlBegin();
-    echo "<div class='mermaid'>\ngraph BT\n";
-    echo "A(No results for $hostgroup) --> B(Oh no!)";
-    htmlEnd();
+    echo "No results for hostgroup $hostgroup.\n";
+    exit();
 
 // If results are returned
 } else {
@@ -306,96 +307,79 @@ if($size == 0){
 
     // Print HTML code for colors legend
     echo '    <span style="font-size:12px">Color legend: </span>' .
-         "\n" . '    <span style="font-size:12px;font-weight:bold;background-color:#3ADF00">OK</span> - ';
-    echo "\n" . '    <span style="font-size:12px;font-weight:bold;background-color:#' . 
-          $severity_colors['0']['color'] . '">' . $severity_colors['0']['name'] . '</span> - ';
-    echo "\n" . '    <span style="font-size:12px;font-weight:bold;background-color:#' . 
-          $severity_colors['1']['color'] . '">' . $severity_colors['1']['name']  . '</span> - ';
-    echo "\n" . '    <span style="font-size:12px;font-weight:bold;background-color:#' . 
-          $severity_colors['2']['color'] . '">' . $severity_colors['2']['name']  . '</span> - ';
-    echo "\n" . '    <span style="font-size:12px;font-weight:bold;background-color:#' . 
-          $severity_colors['3']['color'] . '">' . $severity_colors['3']['name']  . '</span> - ';
-    echo "\n" . '    <span style="font-size:12px;font-weight:bold;background-color:#' . 
-          $severity_colors['4']['color'] . '">' . $severity_colors['4']['name']  . '</span> - ';
-    echo "\n" . '    <span style="font-size:12px;font-weight:bold;background-color:#' . 
+         "\n" . '    <span style="font-size:12px;font-weight:bold;background-color:#3ADF00">OK</span> - ' .
+         "\n" . '    <span style="font-size:12px;font-weight:bold;background-color:#' . 
+          $severity_colors['0']['color'] . '">' . $severity_colors['0']['name'] . '</span> - ' .
+         "\n" . '    <span style="font-size:12px;font-weight:bold;background-color:#' . 
+          $severity_colors['1']['color'] . '">' . $severity_colors['1']['name']  . '</span> - ' .
+         "\n" . '    <span style="font-size:12px;font-weight:bold;background-color:#' . 
+          $severity_colors['2']['color'] . '">' . $severity_colors['2']['name']  . '</span> - ' .
+         "\n" . '    <span style="font-size:12px;font-weight:bold;background-color:#' . 
+          $severity_colors['3']['color'] . '">' . $severity_colors['3']['name']  . '</span> - ' .
+         "\n" . '    <span style="font-size:12px;font-weight:bold;background-color:#' . 
+          $severity_colors['4']['color'] . '">' . $severity_colors['4']['name']  . '</span> - ' .
+         "\n" . '    <span style="font-size:12px;font-weight:bold;background-color:#' . 
           $severity_colors['5']['color'] . '">' . $severity_colors['5']['name']  . '</span>';
 
+    // Print begin code of vis.js topology
     echo "\n    <hr/>\n    <div id=\"mynetwork\"></div>\n" .
          "<script type=\"text/javascript\">\n" .
          "  // create an array with nodes\n" .
          "  var nodes = new vis.DataSet([\n";
 
-    // Variables for style control
-    $problemHosts = array();
-    $okHosts = array();
-
-    // Variable for nodes link control
+    // Variable for nodes print control
     $linkHosts = array();
-
     $hostLines = array();
 
-    // Loop for print MermaidJS code
+    // Loop for print vis.js node code
     foreach($depends as $line){
 
         if(!in_array($line['HostID'], $linkHosts)) {
 
-            $hostLines[] = "{id: " . $line['HostID'] . ", label: \"" . $line['Host'] . "\", shape: 'box'}";
+            $color = '3ADF00';
+            if($line['MaxSeverity'] != NULL) {
+                $color = $severity_colors[$line['MaxSeverity']]['color'];
+            }
+            $hostLines[] = "{id: " . $line['HostID'] . ", label: \"" . $line['Host'] . "\", color: '#" . $color . "'}";
             $linkHosts[] = $line['HostID'];
 
         }
         if(!in_array($line['DepID'], $linkHosts)) {
 
-            $hostLines[] = "{id: " . $line['DepID'] . ", label: \"" . $line['Depends'] . "\", shape: 'box'}";
+            $color = '3ADF00';
+            if($line['MaxDepSeverity'] != NULL) {
+                $color = $severity_colors[$line['MaxDepSeverity']]['color'];
+            }
+            $hostLines[] = "{id: " . $line['DepID'] . ", label: \"" . $line['Depends'] . "\", color: '#" . $color . "'}";
             $linkHosts[] = $line['DepID'];
 
         }
 
         if ($line === end($depends)){
           echo implode(",\n", $hostLines);
-          echo "]);\n";
-        }
-
-        // Print style for MermaidJS nodes.
-        if($line['MaxSeverity'] != NULL && !in_array($line['HostID'], $problemHosts)){
-
-            //echo "style " . $line['HostID'] . " fill:#" . $severity_colors[$line['MaxSeverity']]['color'] . "\n";
-            $problemHosts[] = $line['HostID'];
-
-        } elseif(!in_array($line['HostID'], $okHosts) && !in_array($line['HostID'], $problemHosts)) {
-
-            //echo "style " . $line['HostID'] . " fill:#3ADF00\n";
-            $okHosts[] = $line['HostID'];
-
-        }
-        if($line['MaxDepSeverity'] != NULL && !in_array($line['DepID'], $problemHosts)) {
-
-            //echo "style " . $line['DepID'] . " fill:#" . $severity_colors[$line['MaxDepSeverity']]['color'] . "\n";
-            $problemHosts[] = $line['DepID'];
-
-        } elseif(!in_array($line['DepID'], $okHosts) && !in_array($line['DepID'], $problemHosts)) {
-
-            //echo "style " . $line['DepID'] . " fill:#3ADF00\n";
-            $okHosts[] = $line['DepID'];
-
+          echo "\n]);\n";
         }
 
     }
 
+    // Variable for nodes edges control
     $linkHosts = array();
     $nodeLines = array();
     echo "// create an array with edges\n" .
          "var edges = new vis.DataSet([\n";
+
+    // Loop for print vis.js edges code
     foreach($depends as $line){
 
         if(!in_array($line['HostID'] . $line['DepID'], $linkHosts)) {
 
-            $nodeLines[] = "{from: " . $line['HostID'] . ",to: " . $line['DepID'] . ", arrows:'to'}";
+            $nodeLines[] = "{from: " . $line['HostID'] . ", to: " . $line['DepID'] . ", arrows:'to'}";
 
         }
 
         if ($line === end($depends)){
           echo implode(",\n", $nodeLines);
-          echo "]);\n";
+          echo "\n]);\n";
         }
 
     }
