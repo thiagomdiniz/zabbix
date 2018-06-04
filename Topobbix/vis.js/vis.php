@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__FILE__) . '/include/config.inc.php';
+require_once dirname(__FILE__) . '/../include/config.inc.php';
 
 // Check logged user
 if (!CWebUser::$data['alias'] || CWebUser::$data['alias'] == ZBX_GUEST_USER) {
@@ -14,7 +14,7 @@ if (!CWebUser::$data['alias'] || CWebUser::$data['alias'] == ZBX_GUEST_USER) {
     if (isset($_GET['hostgroup'])) {
 
         $hostgroup = $_GET['hostgroup'];
-        //$triggernames = $_GET['triggernames'];
+        $vhostid = $_GET['vhostid'];
 
         // Check user permissions for the HostGroup
         $grupo = API::HostGroup()->get([
@@ -46,14 +46,24 @@ function htmlBegin(){
 
     echo "<html>\n" .
          "<head>\n" .
-         "  <title>Network | Basic usage</title>\n" .
+         "  <title>Topobbix | Zabbix Topology Viewer</title>\n" .
          "  <script type=\"text/javascript\" src=\"https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js\"></script>\n" .
          "  <link href=\"https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css\" rel=\"stylesheet\" type=\"text/css\" />\n" .
+         "  <script type=\"text/javascript\" src=\"../js/vendors/jquery.js\"></script>\n" .
          "  <style type=\"text/css\">\n" .
          "    #mynetwork {\n" .
-         "      width: 900px;\n" .
-         "      height: 500px;\n" .
+         "      width: 70%;\n" .
+         "      height: 85%;\n" .
          "      border: 1px solid lightgray;\n" .
+         "      float: left;\n" .
+         "    }\n" .
+         "    #eventSpan {\n" .
+         "      width: 28%;\n" .
+         "      height: 85%;\n" .
+         "      border: 1px solid lightgray;\n" .
+         "      float: left;\n" .
+         "      font-size: 12px;\n" .
+         "      overflow-y: scroll;\n" .
          "    }\n" .
          "  </style>\n" .
          "</head>\n" .
@@ -65,6 +75,9 @@ function htmlBegin(){
 // Function to print the end of HTML and vis.js code
 function htmlEnd(){
 
+	global $hostgroup;
+	global $vhostid;
+
   echo "// create a network\n" .
        "var container = document.getElementById('mynetwork');\n" .
        "var data = {\n" .
@@ -74,28 +87,54 @@ function htmlEnd(){
 //       "var options = {};\n" .
        "var options = {\n" .
        "nodes: {\n" .
-       "  shadow: true,\n" .
+//       "  shadow: true,\n" .
        "  margin: 10,\n" .
        "  shape: 'box',\n" .
-       "  font: { size: 20 }\n" .
+       "  font: { size: 20 },\n" .
+       "  shapeProperties: {\n" .
+       "     useBorderWithImage:true\n" .
+       "  },\n" .
+       "  widthConstraint: { maximum: 150 }\n" .
        "},\n" .
        "layout: {\n" .
-       "  randomSeed: undefined,\n" .
-       "  improvedLayout:true,\n" .
+//       "  randomSeed: undefined,\n" .
+//       "  improvedLayout:false,\n" .
        "  hierarchical: {\n" .
        "    enabled:true,\n" .
-       "    levelSeparation: 150,\n" .
-       "    nodeSpacing: 100,\n" .
-       "    treeSpacing: 200,\n" .
-       "    blockShifting: true,\n" .
-       "    edgeMinimization: true,\n" .
-       "    parentCentralization: true,\n" .
+//       "    levelSeparation: 110,\n" .
+       "    nodeSpacing: 200,\n" .
+//       "    treeSpacing: 200,\n" .
+//       "    blockShifting: false,\n" .
+//       "    edgeMinimization: false,\n" .
+//       "    parentCentralization: true,\n" .
        "    direction: 'DU',        // UD, DU, LR, RL\n" .
        "    sortMethod: 'directed'   // hubsize, directed\n" .
        "  }\n" .
-       "}\n" .
+       "},\n" .
+       "interaction: {dragNodes :false}\n" .
+//       " physics: {\n" .
+//       "     enabled: true,\n" .
+//       "   repulsion: {\n" .
+//       "     nodeDistance: 400\n" .
+//       "   }\n" .
+//       " }\n" .
        "}\n" .
        "var network = new vis.Network(container, data, options);\n" .
+       "network.on(\"click\", function (params) {\n" .
+       "  $(\"#eventSpan\").load(\"detail.php?vhostid=\" + params.nodes);\n" .
+       "});\n";
+
+  if($vhostid){
+
+    echo "$(\"#eventSpan\").load(\"detail.php?vhostid=" . $vhostid . "\");\n". 
+         "network.selectNodes([" . $vhostid . "]);\n";
+
+  }
+
+  echo "$(document).on({\n" .
+       "ajaxStart: function() { $(\"#eventSpan\").html(\"<h3>loading...</h3>\");    },\n" .
+//       "ajaxStop: function() { $(\"#eventSpan\").removeClass(\"loading\"); }\n" .
+       "});\n" .
        "</script>\n" .
        "</body>\n" .
        "</html>";
@@ -309,20 +348,21 @@ if($size == 0){
     echo '    <span style="font-size:12px">Color legend: </span>' .
          "\n" . '    <span style="font-size:12px;font-weight:bold;background-color:#3ADF00">OK</span> - ' .
          "\n" . '    <span style="font-size:12px;font-weight:bold;background-color:#' . 
-          $severity_colors['0']['color'] . '">' . $severity_colors['0']['name'] . '</span> - ' .
+          $severity_colors['0']['color'] . '">' . '0-' . $severity_colors['0']['name'] . '</span> - ' .
          "\n" . '    <span style="font-size:12px;font-weight:bold;background-color:#' . 
-          $severity_colors['1']['color'] . '">' . $severity_colors['1']['name']  . '</span> - ' .
+          $severity_colors['1']['color'] . '">' . '1-' . $severity_colors['1']['name']  . '</span> - ' .
          "\n" . '    <span style="font-size:12px;font-weight:bold;background-color:#' . 
-          $severity_colors['2']['color'] . '">' . $severity_colors['2']['name']  . '</span> - ' .
+          $severity_colors['2']['color'] . '">' . '2-' . $severity_colors['2']['name']  . '</span> - ' .
          "\n" . '    <span style="font-size:12px;font-weight:bold;background-color:#' . 
-          $severity_colors['3']['color'] . '">' . $severity_colors['3']['name']  . '</span> - ' .
+          $severity_colors['3']['color'] . '">' . '3-' . $severity_colors['3']['name']  . '</span> - ' .
          "\n" . '    <span style="font-size:12px;font-weight:bold;background-color:#' . 
-          $severity_colors['4']['color'] . '">' . $severity_colors['4']['name']  . '</span> - ' .
+          $severity_colors['4']['color'] . '">' . '4-' . $severity_colors['4']['name']  . '</span> - ' .
          "\n" . '    <span style="font-size:12px;font-weight:bold;background-color:#' . 
-          $severity_colors['5']['color'] . '">' . $severity_colors['5']['name']  . '</span>';
+          $severity_colors['5']['color'] . '">' . '5-' . $severity_colors['5']['name']  . '</span>';
 
     // Print begin code of vis.js topology
     echo "\n    <hr/>\n    <div id=\"mynetwork\"></div>\n" .
+         "    <div id=\"eventSpan\"></div>\n" .
          "<script type=\"text/javascript\">\n" .
          "  // create an array with nodes\n" .
          "  var nodes = new vis.DataSet([\n";
@@ -350,6 +390,7 @@ if($size == 0){
             if($line['MaxDepSeverity'] != NULL) {
                 $color = $severity_colors[$line['MaxDepSeverity']]['color'];
             }
+            //$hostLines[] = "{id: " . $line['DepID'] . ", label: \"" . $line['Depends'] . "\", color: '#" . $color . "', image: 'http://192.168.25.250/zabbix/imgstore.php?iconid=1', shape: 'image'}";
             $hostLines[] = "{id: " . $line['DepID'] . ", label: \"" . $line['Depends'] . "\", color: '#" . $color . "'}";
             $linkHosts[] = $line['DepID'];
 
