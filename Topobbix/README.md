@@ -31,13 +31,13 @@ Select a host group and the topology will appear in the browser:
 
 ![example1](READMEImages/topobbix1.png)
 
-Vis.js library allows you to right-click the topology and save it as an image:
-
-![example2](READMEImages/topobbix2.png)
-
 The colors of the triggers' severities are acquired from the Zabbix configuration. When any topology host contains active problems, its color will be changed to the most severe among active issues.
 
 The vis.js library allows you to zoom in and out on the topology.
+
+Vis.js library allows you to right-click the topology and save it as an image:
+
+![example2](READMEImages/topobbix2.png)
 
 ## Built With
 
