@@ -112,9 +112,13 @@ function htmlBegin() {
 
 	foreach($groups as $group) {
 
-		echo "			<option value=\"" . $group['name'] . "\"" .
-			(($group['name'] == $hostgroup) ? " selected" : "") .
-			">" . $group['name'] . "</option>\n";
+		if(strpos($group['name'], "Templates") === false) {
+
+			echo "			<option value=\"" . $group['name'] . "\"" .
+				(($group['name'] == $hostgroup) ? " selected" : "") .
+				">" . $group['name'] . "</option>\n";
+
+		}
 
 	}
 
