@@ -1,6 +1,6 @@
 # Topobbix
 
-Topobbix is a simple PHP script that generates a network topology based on the dependencies between the triggers of a given host group.
+Topobbix generates a network topology based on the dependencies between the triggers of a given host group.
 
 ## Getting Started
 
@@ -17,16 +17,16 @@ Tested in Zabbix 3.4.
 [Download Topobbix](https://github.com/thiagomdiniz/zabbix/releases/download/v1.0/topobbix_v1.0.zip) to the document root of your Zabbix frontend and unzip file.
 For example, if you use CentOS 7, the document root directory is located in "/usr/share/zabbix".
 
-The two PHP scripts do the same thing, however, "topobbix_checkuser.php" verifies that you are logged in to Zabbix and have permission on the HostGroup. The PHP script "topobbix.php" do not do this verification.
-
 ### Usage
+
+Topobbix respects the permissions of hostgroups configured in Zabbix. You must be logged in to the Zabbix frontend so that you can select hostgroups in Topobbix. In case you are not logged in, Topobbix will notify you.
 
 The PHP script accepts two url parameters:
 * "hostgroup": Optional. Defines which hostgroup name in your Zabbix environment will be queried.
 * "vhostid": Optional. If the value is a Zabbix Host ID, the host is automatically selected in the topology.
 
 With the Topobbix scripts unziped to the document root of your Zabbix Frontend, access it through the URL of your Zabbix:
-* "https://localhost/topobbix.php"
+* "https://localhost/zabbix/topobbix.php"
 Select a host group and the topology will appear in the browser:
 
 ![example1](READMEImages/topobbix1.png)
@@ -36,6 +36,8 @@ Vis.js library allows you to right-click the topology and save it as an image:
 ![example2](READMEImages/topobbix2.png)
 
 The colors of the triggers' severities are acquired from the Zabbix configuration. When any topology host contains active problems, its color will be changed to the most severe among active issues.
+
+The vis.js library allows you to zoom in and out on the topology.
 
 ## Built With
 
