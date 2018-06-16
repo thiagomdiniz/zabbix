@@ -33,6 +33,8 @@ Select a host group and the topology will appear in the browser:
 
 The colors of the triggers' severities are acquired from the Zabbix configuration. When any topology host contains active problems, its color will be changed to the most severe among active issues.
 
+When you click on a host, its details are displayed next to the topology.
+
 The vis.js library allows you to zoom in and out on the topology.
 
 Vis.js library allows you to right-click the topology and save it as an image:
