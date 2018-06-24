@@ -22,13 +22,13 @@ if (!CWebUser::$data['alias'] || CWebUser::$data['alias'] == ZBX_GUEST_USER) {
 		$vhostid = $_GET['vhostid'];
 
 		// Check user permissions for the HostGroup
-		$grupo = API::HostGroup()->get([
+		$group = API::HostGroup()->get([
 			'output' => ['name'],
 			'filter' => ['name' => $hostgroup],
 			'countOutput' => 'true'
 		]);
 
-		if(!$grupo) {
+		if(!$group) {
 
 			htmlBegin();
 			echo "		<p>You don't have permission to read this HostGroup or this HostGroup not exists!</p>\n\n" .
@@ -204,7 +204,7 @@ function htmlEnd() {
 }
 
 // SQL query for severity colors config
-$severityColorSQL = "select severity_name_0, severity_color_0, " .
+$severity_color_sql = "select severity_name_0, severity_color_0, " .
 	"severity_name_1, severity_color_1, " .
 	"severity_name_2, severity_color_2, " .
 	"severity_name_3, severity_color_3, " .
@@ -217,7 +217,7 @@ switch ($DB['TYPE']){
 
 	case ZBX_DB_MYSQL:
 
-		$dependsSQL = "select * from " .
+		$depends_sql = "select * from " .
 
 			"(select distinct " .
 			"g.name as 'hostgroup', h.name as 'host', h.hostid as 'hostid', t.description as 'trigger', t.value as 'triggered', " .
@@ -285,7 +285,7 @@ switch ($DB['TYPE']){
 
 	case ZBX_DB_POSTGRESQL:
 
-		$dependsSQL = "select * from " .
+		$depends_sql = "select * from " .
 
 			"(select distinct " .
 			"g.name as hostgroup, h.name as host, h.hostid as hostid, t.description as trigger, t.value as triggered, " .
@@ -365,8 +365,8 @@ switch ($DB['TYPE']){
 }
 
 // Create an array with severity names and colors defined on Zabbix config
-$result = DBselect($severityColorSQL);
-$severity_colors = array();
+$result = DBselect($severity_color_sql);
+$severity_colors = [];
 
 while($color = DBfetch($result, $convertNulls = false)) {
 
@@ -380,8 +380,8 @@ while($color = DBfetch($result, $convertNulls = false)) {
 }
 
 // Create an array with Zabbix triggers dependencies
-$result = DBselect($dependsSQL);
-$depends = array();
+$result = DBselect($depends_sql);
+$depends = [];
 
 while ($depend = DBfetch($result, $convertNulls = false)) {
 
@@ -440,13 +440,13 @@ if($size == 0) {
 		"			var nodes = new vis.DataSet([\n";
 
 	// Variable for nodes print control
-	$linkHosts = array();
-	$hostLines = array();
+	$link_hosts = [];
+	$host_lines = [];
 
 	// Loop for print vis.js node code
 	foreach($depends as $line) {
 
-		if(!in_array($line['HostID'], $linkHosts)) {
+		if(!in_array($line['HostID'], $link_hosts)) {
 
 			$color = '3ADF00';
 
@@ -456,12 +456,12 @@ if($size == 0) {
 
 			}
 
-			$hostLines[] = "				{id: " . $line['HostID'] . ", label: \"" . $line['Host'] . "\", color: '#" . $color . "'}";
-			$linkHosts[] = $line['HostID'];
+			$host_lines[] = "				{id: " . $line['HostID'] . ", label: \"" . $line['Host'] . "\", color: '#" . $color . "'}";
+			$link_hosts[] = $line['HostID'];
 
 		}
 
-		if($line['DepID'] && !in_array($line['DepID'], $linkHosts)) {
+		if($line['DepID'] && !in_array($line['DepID'], $link_hosts)) {
 
 			$color = '3ADF00';
 
@@ -472,14 +472,14 @@ if($size == 0) {
 			}
 
 			//$hostLines[] = "				{id: " . $line['DepID'] . ", label: \"" . $line['Depends'] . "\", color: '#" . $color . "', image: 'http://192.168.25.250/zabbix/imgstore.php?iconid=1', shape: 'image'}";
-			$hostLines[] = "				{id: " . $line['DepID'] . ", label: \"" . $line['Depends'] . "\", color: '#" . $color . "'}";
-			$linkHosts[] = $line['DepID'];
+			$host_lines[] = "				{id: " . $line['DepID'] . ", label: \"" . $line['Depends'] . "\", color: '#" . $color . "'}";
+			$link_hosts[] = $line['DepID'];
 
 		}
 
 		if ($line === end($depends)) {
 
-			echo implode(",\n", $hostLines);
+			echo implode(",\n", $host_lines);
 			echo "\n			]);\n";
 
 		}
@@ -487,23 +487,23 @@ if($size == 0) {
 	}
 
 	// Variable for nodes edges control
-	$linkHosts = array();
-	$nodeLines = array();
+	$link_hosts = [];
+	$node_lines = [];
 	echo "			// create an array with edges\n" .
 		"			var edges = new vis.DataSet([\n";
 
 	// Loop for print vis.js edges code
 	foreach($depends as $line) {
 
-		if($line['DepID'] && !in_array($line['HostID'] . $line['DepID'], $linkHosts)) {
+		if($line['DepID'] && !in_array($line['HostID'] . $line['DepID'], $link_hosts)) {
 
-			$nodeLines[] = "				{from: " . $line['HostID'] . ", to: " . $line['DepID'] . ", arrows:'to'}";
+			$node_lines[] = "				{from: " . $line['HostID'] . ", to: " . $line['DepID'] . ", arrows:'to'}";
 
 		}
 
 		if ($line === end($depends)) {
 
-			echo implode(",\n", $nodeLines);
+			echo implode(",\n", $node_lines);
 			echo "\n			]);\n";
 
 		}
