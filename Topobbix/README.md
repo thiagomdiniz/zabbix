@@ -14,7 +14,7 @@ Tested in Zabbix 3.4.
 
 ### Installing
 
-[Download Topobbix](https://github.com/thiagomdiniz/zabbix/releases/download/v1.0/topobbix_v1.0.zip) to the document root of your Zabbix frontend and unzip file.
+[Download Topobbix](https://github.com/thiagomdiniz/zabbix/releases) to the document root of your Zabbix frontend and unzip file.
 For example, if you use CentOS 7, the document root directory is located in "/usr/share/zabbix".
 
 ### Usage
