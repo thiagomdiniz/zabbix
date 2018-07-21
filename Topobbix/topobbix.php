@@ -16,16 +16,15 @@ if (!CWebUser::$data['alias'] || CWebUser::$data['alias'] == ZBX_GUEST_USER) {
 } else {
 
 	// Read GET Topobbix URL parameters
-	if (isset($_GET['hostgroup'])) {
+	if (isset($_GET['hostgroupid'])) {
 
-		$hostgroup = $_GET['hostgroup'];
+		$hostgroupid = $_GET['hostgroupid'];
 		$vhostid = $_GET['vhostid'];
 
 		// Check user permissions for the HostGroup
 		$group = API::HostGroup()->get([
 			'output' => ['name'],
-			'filter' => ['name' => $hostgroup],
-			'countOutput' => 'true'
+			'groupids' => [$hostgroupid]
 		]);
 
 		if(!$group) {
@@ -37,6 +36,10 @@ if (!CWebUser::$data['alias'] || CWebUser::$data['alias'] == ZBX_GUEST_USER) {
 				"		<script type=\"text/javascript\">\n\n";
 			htmlEnd();
 			exit();
+
+		} else {
+
+			$hostgroup = $group[0]['name'];
 
 		}
 
@@ -107,14 +110,14 @@ function htmlBegin() {
 		"			<option value=\"\" selected>None</option>\n";
 
 	$groups = API::HostGroup()->get([
-		'output' => ['name']
+		'output' => ['groupid','name']
 	]);
 
 	foreach($groups as $group) {
 
 		if(strpos($group['name'], "Templates") === false) {
 
-			echo "			<option value=\"" . $group['name'] . "\"" .
+			echo "			<option value=\"" . $group['groupid'] . "\"" .
 				(($group['name'] == $hostgroup) ? " selected" : "") .
 				">" . $group['name'] . "</option>\n";
 
@@ -195,7 +198,7 @@ function htmlEnd() {
 		//"				ajaxStop: function() { $(\"#eventSpan\").removeClass(\"loading\"); }\n" .
 		"			});\n\n" .
 		"			$(\"#hg\").change(function(){\n" .
-		"				window.open(\"topobbix.php?hostgroup=\" + $( this ).val(), \"_self\");\n" .
+		"				window.open(\"topobbix.php?hostgroupid=\" + $( this ).val(), \"_self\");\n" .
 		"			});\n\n" .
 		"		</script>\n" .
 		"	</body>\n" .
@@ -278,7 +281,7 @@ switch ($DB['TYPE']){
 			"join triggers t on f.triggerid = t.triggerid " .
 			"left join trigger_depends td on t.triggerid = td.triggerid_down " .
 
-			"where g.name = '$hostgroup' and h.status = 0 and t.status = 0) as c ";
+			"where g.groupid = '$hostgroupid' and h.status = 0 and t.status = 0) as c ";
 			//"where depends is not null and host != depends";
 
 		break;
@@ -352,7 +355,7 @@ switch ($DB['TYPE']){
 			"join triggers t on f.triggerid = t.triggerid " .
 			"left join trigger_depends td on t.triggerid = td.triggerid_down " .
 
-			"where g.name = '$hostgroup' and h.status = 0 and t.status = 0) as c ";
+			"where g.groupid = '$hostgroupid' and h.status = 0 and t.status = 0) as c ";
 			//"where depends is not null and host != depends";
 
 		break;
