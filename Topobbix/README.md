@@ -22,7 +22,7 @@ For example, if you use CentOS 7, the document root directory is located in "/us
 Topobbix respects the permissions of hostgroups configured in Zabbix. You must be logged in to the Zabbix frontend so that you can select hostgroups in Topobbix. In case you are not logged in, Topobbix will notify you.
 
 The PHP script accepts two url parameters:
-* "hostgroup": Optional. Defines which hostgroup name in your Zabbix environment will be queried.
+* "hostgroupid": Optional. Defines which hostgroup ID in your Zabbix environment will be queried.
 * "vhostid": Optional. If the value is a Zabbix Host ID, the host is automatically selected in the topology.
 
 With the Topobbix scripts unziped to the document root of your Zabbix Frontend, access it through the URL of your Zabbix:
