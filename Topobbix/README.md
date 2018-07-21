@@ -41,7 +41,7 @@ Vis.js library allows you to right-click the topology and save it as an image:
 
 ![example2](READMEImages/topobbix2.png)
 
-You can also use links on Zabbix maps:
+You can also use URLs on Zabbix maps with the {HOSTGROUP.ID} macro:
 
 ![example3](READMEImages/topobbix3.png)
 
