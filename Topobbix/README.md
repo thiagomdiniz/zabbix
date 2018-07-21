@@ -41,6 +41,12 @@ Vis.js library allows you to right-click the topology and save it as an image:
 
 ![example2](READMEImages/topobbix2.png)
 
+You can also use links on Zabbix maps:
+
+![example3](READMEImages/topobbix3.png)
+
+![example4](READMEImages/topobbix4.png)
+
 ## Built With
 
 * [PHP](http://php.net/) - PHP is a popular general-purpose scripting language that is especially suited to web development.
