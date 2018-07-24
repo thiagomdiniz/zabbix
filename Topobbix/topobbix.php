@@ -281,8 +281,8 @@ switch ($DB['TYPE']){
 			"join triggers t on f.triggerid = t.triggerid " .
 			"left join trigger_depends td on t.triggerid = td.triggerid_down " .
 
-			"where g.groupid = '$hostgroupid' and h.status = 0 and t.status = 0) as c ";
-			//"where depends is not null and host != depends";
+			"where g.name like '$hostgroup%' and h.status = 0 and t.status = 0) as c " .
+			"where not host <=> depends";
 
 		break;
 
@@ -355,8 +355,8 @@ switch ($DB['TYPE']){
 			"join triggers t on f.triggerid = t.triggerid " .
 			"left join trigger_depends td on t.triggerid = td.triggerid_down " .
 
-			"where g.groupid = '$hostgroupid' and h.status = 0 and t.status = 0) as c ";
-			//"where depends is not null and host != depends";
+			"where g.name like '$hostgroup%' and h.status = 0 and t.status = 0) as c " .
+			"where host is distinct from depends";
 
 		break;
 
