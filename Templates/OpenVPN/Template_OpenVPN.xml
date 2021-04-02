@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>4.4</version>
+    <date>2021-04-02T04:59:23Z</date>
+    <groups>
+        <group>
+            <name>Templates/Applications</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Template App OpenVPN</template>
+            <name>Template App OpenVPN</name>
+            <groups>
+                <group>
+                    <name>Templates/Applications</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>OpenVPN Raw</name>
+                </application>
+                <application>
+                    <name>VPN Clients</name>
+                </application>
+            </applications>
+            <items>
+                <item>
+                    <name>OVPN Clients Connections</name>
+                    <type>DEPENDENT</type>
+                    <key>connections[clients]</key>
+                    <delay>0</delay>
+                    <history>5d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>VPN Clients</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$.length()</params>
+                        </step>
+                    </preprocessing>
+                    <master_item>
+                        <key>vfs.file.contents[{$OVPN_STATUS_FILE}]</key>
+                    </master_item>
+                </item>
+                <item>
+                    <name>OVPN Clients Raw</name>
+                    <type>ZABBIX_ACTIVE</type>
+                    <key>vfs.file.contents[{$OVPN_STATUS_FILE}]</key>
+                    <history>1h</history>
+                    <trends>0</trends>
+                    <value_type>TEXT</value_type>
+                    <applications>
+                        <application>
+                            <name>OpenVPN Raw</name>
+                        </application>
+                    </applications>
+                    <preprocessing>
+                        <step>
+                            <type>REGEX</type>
+                            <params>(((.*,){4}.*[\r\n])+)
+\1</params>
+                        </step>
+                        <step>
+                            <type>CSV_TO_JSON</type>
+                            <params>,
+
+1</params>
+                        </step>
+                        <step>
+                            <type>JSONPATH</type>
+                            <params>$[?(@.[&quot;Common Name&quot;] != '')]</params>
+                            <error_handler>CUSTOM_VALUE</error_handler>
+                            <error_handler_params>[]</error_handler_params>
+                        </step>
+                    </preprocessing>
+                </item>
+            </items>
+            <discovery_rules>
+                <discovery_rule>
+                    <name>OpenVPN Clients</name>
+                    <type>DEPENDENT</type>
+                    <key>ovpn.discovery[clients]</key>
+                    <delay>0</delay>
+                    <lifetime>0</lifetime>
+                    <item_prototypes>
+                        <item_prototype>
+                            <name>{#CLIENTE} - Bytes Received</name>
+                            <type>DEPENDENT</type>
+                            <key>clients.bytes.received[{#CLIENTE}]</key>
+                            <delay>0</delay>
+                            <history>5d</history>
+                            <trends>90d</trends>
+                            <units>B</units>
+                            <applications>
+                                <application>
+                                    <name>VPN Clients</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$[?(@.[&quot;Common Name&quot;] == '{#CLIENTE}')].[&quot;Bytes Received&quot;].first()</params>
+                                </step>
+                                <step>
+                                    <type>SIMPLE_CHANGE</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>vfs.file.contents[{$OVPN_STATUS_FILE}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#CLIENTE} - Bytes Sent</name>
+                            <type>DEPENDENT</type>
+                            <key>clients.bytes.sent[{#CLIENTE}]</key>
+                            <delay>0</delay>
+                            <history>5d</history>
+                            <trends>90d</trends>
+                            <units>B</units>
+                            <applications>
+                                <application>
+                                    <name>VPN Clients</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$[?(@.[&quot;Common Name&quot;] == '{#CLIENTE}')].[&quot;Bytes Sent&quot;].first()</params>
+                                </step>
+                                <step>
+                                    <type>SIMPLE_CHANGE</type>
+                                    <params/>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>vfs.file.contents[{$OVPN_STATUS_FILE}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#CLIENTE} - Connected Since</name>
+                            <type>DEPENDENT</type>
+                            <key>clients.connected.since[{#CLIENTE}]</key>
+                            <delay>0</delay>
+                            <history>1h</history>
+                            <trends>0</trends>
+                            <value_type>CHAR</value_type>
+                            <applications>
+                                <application>
+                                    <name>VPN Clients</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$[?(@.[&quot;Common Name&quot;] == '{#CLIENTE}')].[&quot;Connected Since&quot;].first()</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>vfs.file.contents[{$OVPN_STATUS_FILE}]</key>
+                            </master_item>
+                        </item_prototype>
+                        <item_prototype>
+                            <name>{#CLIENTE} - Real Address</name>
+                            <type>DEPENDENT</type>
+                            <key>clients.real.address[{#CLIENTE}]</key>
+                            <delay>0</delay>
+                            <history>1h</history>
+                            <trends>0</trends>
+                            <value_type>CHAR</value_type>
+                            <applications>
+                                <application>
+                                    <name>VPN Clients</name>
+                                </application>
+                            </applications>
+                            <preprocessing>
+                                <step>
+                                    <type>JSONPATH</type>
+                                    <params>$[?(@.[&quot;Common Name&quot;] == '{#CLIENTE}')].[&quot;Real Address&quot;].first()</params>
+                                </step>
+                            </preprocessing>
+                            <master_item>
+                                <key>vfs.file.contents[{$OVPN_STATUS_FILE}]</key>
+                            </master_item>
+                        </item_prototype>
+                    </item_prototypes>
+                    <master_item>
+                        <key>vfs.file.contents[{$OVPN_STATUS_FILE}]</key>
+                    </master_item>
+                    <lld_macro_paths>
+                        <lld_macro_path>
+                            <lld_macro>{#CLIENTE}</lld_macro>
+                            <path>$.[&quot;Common Name&quot;]</path>
+                        </lld_macro_path>
+                    </lld_macro_paths>
+                </discovery_rule>
+            </discovery_rules>
+            <macros>
+                <macro>
+                    <macro>{$OVPN_STATUS_FILE}</macro>
+                    <value>/etc/openvpn/openvpn-status.log</value>
+                    <description>Status file path specified with the &quot;status&quot; parameter in the OpenVPN server configuration file.</description>
+                </macro>
+            </macros>
+        </template>
+    </templates>
+</zabbix_export>
